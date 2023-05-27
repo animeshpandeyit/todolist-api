@@ -62,9 +62,68 @@ export const login = async (req, res) => {
 
 export const getallUsers = async (req, res) => {
   const users = await User.find({});
-
+  // const keywords = req.query;
+  // console.log(keywords);
   res.json({
     success: true,
     users: users,
   });
 };
+
+export const getUserByID = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  console.log(req.params);
+  res.status(200).json({
+    success: true,
+    message: `User ${user.name} has been successfully found`,
+    user: user,
+  });
+};
+
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { name, email } = req.body;
+
+  const updateUser = await User.findByIdAndUpdate(
+    id,
+    { name: name, email: email },
+    { new: true }
+  );
+  res.json({
+    success: true,
+    message: " User updated successfully",
+    user: updateUser,
+  });
+};
+
+export const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(403).json({
+      success: false,
+      message: `User ${email} is not authorized/found`,
+    });
+  }
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+  user.password == hashedPassword;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: `User ${email} has successfully updated Password`,
+    // user: user,
+  });
+};
+
+// export const getUserByID = async (req, res) => {
+//   const { id } = req.query;
+//   const user = await User.findById(id);
+//   res.status(200).json({
+//     success: true,
+//     message: `User ${user.name} has been successfully found`,
+//     user: user,
+//   });
+// };

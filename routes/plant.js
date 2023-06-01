@@ -1,6 +1,8 @@
 import express from "express";
 import multer from "multer";
-import { Plant } from "../models/plant.js";
+// import { Plant } from "../models/plant.js";
+
+// import { getplantData } from "../controllers/plant.js";
 
 const plantrouter = express.Router();
 
@@ -22,6 +24,10 @@ plantrouter.post("/profile", upload.single("image"), async (req, res, next) => {
     const newPlant = new Plant({
       name: req.body.name,
       description: req.body.description,
+      typesofflowers: {
+        category: req.body.category,
+        flowers: req.body.flowers,
+      },
       image: {
         data: req.file.filename,
         contentType: req.file.mimetype,
@@ -36,5 +42,7 @@ plantrouter.post("/profile", upload.single("image"), async (req, res, next) => {
     res.status(500).json({ error: "Failed to upload plant" });
   }
 });
+
+// plantrouter.get("/getplantData", getplantData);
 
 export default plantrouter;

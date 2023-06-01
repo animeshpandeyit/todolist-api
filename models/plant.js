@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+const flowerCategorySchema = new mongoose.Schema({
+  category: String,
+  flowers: [String],
+});
+
 const schema = new mongoose.Schema({
   name: {
     type: String,
@@ -14,6 +19,12 @@ const schema = new mongoose.Schema({
   image: {
     data: Buffer,
     contentType: String,
+  },
+  typesofflowers: [flowerCategorySchema],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
 });
 

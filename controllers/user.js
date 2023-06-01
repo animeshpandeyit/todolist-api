@@ -1,6 +1,7 @@
 import { User } from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sendCookie } from "../utils/features.js";
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -18,17 +19,19 @@ export const register = async (req, res) => {
     password: hashedPassword,
   });
 
-  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-  res
-    .status(201)
-    .cookie("token", token, {
-      httpOnly: true,
-      maxAge: 15 * 60 * 1000,
-    })
-    .json({
-      success: true,
-      message: " Registration successful",
-    });
+  // const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+  // res
+  //   .status(201)
+  //   .cookie("token", token, {
+  //     httpOnly: true,
+  //     maxAge: 15 * 60 * 1000,
+  //   })
+  //   .json({
+  //     success: true,
+  //     message: " Registration successful",
+  //   });
+
+  sendCookie(user, res, "Registration successful", 201);
 };
 
 export const login = async (req, res) => {
@@ -127,3 +130,28 @@ export const resetPassword = async (req, res) => {
 //     user: user,
 //   });
 // };
+export const getMyProfile = (req, res) => {
+  // const { token } = req.cookies;
+  // if (!token) {
+  //   res.status(401).json({ success: false, message: "login first!!" });
+  // }
+  // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  // const user = await User.findById(decoded._id);
+  res.status(200).json({
+    success: true,
+    // message: `Successfully found ${user.name} profile `,
+    user: req.user,
+  });
+};
+
+export const logout = (req, res) => {
+  res
+    .status(200)
+    .cookie("token", "", {
+      expires: new Date(Date.now()),
+    })
+    .json({
+      success: true,
+      message: `Logged out`,
+    });
+};
